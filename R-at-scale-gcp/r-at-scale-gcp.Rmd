@@ -1,0 +1,120 @@
+---
+title: "R at scale on the <br>Google Cloud Platform
+<br>
+<img src=gcp.png>"
+author: Mark Edmondson (@HoloMarkeD)
+date: May 20th, 2019 - CopenhagenR
+output: 
+  revealjs::revealjs_presentation:
+    theme: night
+---
+
+## code.markedmondson.me
+
+![fgf](blogpost.png)
+
+## Qualifications
+
+- Digital agencies since 2007
+- useR since 2012 - Motive: how to use all this web data?
+- Shiny enthusiast e.g. https://gallery.shinyapps.io/ga-effect/
+- Google Developer Expert - Google Analytics & Google Cloud
+- Several Google API themed packages on CRAN via `googleAuthR`
+- Part of cloudyr group (AWS/Azure/GCP R packages for the cloud) https://cloudyr.github.io/
+- Now: Data Engineer @ IIH Nordic
+
+![ga-effect](ga-effect.png)
+
+## googleAuthRverse
+
+* `searchConsoleR`
+* `googleAuthR`
+* `googleAnalyticsR` 
+* `googleComputeEngineR` (Cloudyr)  
+* `bigQueryR` (Cloudyr)
+* `googleCloudStorageR` (Cloudyr)
+* `googleLanguageR` (rOpenSci)
+
+Slack group to talk around the packages #googleAuthRverse 
+
+* `googleCloudVisionR`
+* `googleKubernetesR`
+
+# I thought I knew a bit about R and Google Cloud but then...
+
+## GoogleNext19 - Data Science at Scale with R on GCP
+
+A 40 mins talk at Google Next19 with lots of new things to try!
+
+https://www.youtube.com/watch?v=XpNVixSN-Mg&feature=youtu.be
+
+![next-intro](gcp-next-r-at-scale.png)
+
+## New concepts
+
+Great video that goes more into Spark clusters, Jupyter notebooks, training using ML Engine and scaling using Seldon on Kubernetes that I haven't tried yet
+
+![next19](gcp-r-next.png)
+
+## Some shots from the video
+
+![](next-2-gcp.png)
+
+# It (almost) always starts with Docker
+
+
+
+## Dockerfiles from The Rocker Project
+
+https://www.rocker-project.org/
+
+![rocker-team](rocker-team.png)
+
+## Dockerfiles
+
+```
+FROM rocker/tidyverse:3.6.0
+MAINTAINER Mark Edmondson (r@sunholo.com)
+
+## Install packages from CRAN
+RUN install2.r --error \ 
+    -r 'http://cran.rstudio.com' \
+    googleAuthR \ 
+    googleComputeEngineR \ 
+    googleAnalyticsR \ 
+    searchConsoleR \ 
+    googleCloudStorageR \
+    bigQueryR \ 
+    ## install Github packages
+    && installGithub.r MarkEdmondson1234/youtubeAnalyticsR \
+    ## clean up
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
+```
+
+## Docker + R = Production level R
+
+* Flexible
+* Version controlled
+* Scalable
+
+
+# Scaling an R Script
+
+## Vertical scaling
+
+
+## Horizontal scaling
+
+
+## Serverless scaling
+
+# Scaling Shiny and R APIs
+
+## Standard VM
+
+## Kubernetes
+
+## The future?
+
+
+

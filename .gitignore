@@ -1,0 +1,16 @@
+.Rproj.user
+.Rhistory
+.RData
+.httr-oauth
+.httr-oauth-SUSPENDED
+inst/doc
+auth.json
+
+auth/travis-ssh-key
+auth/travis-ssh-key.pub
+secrets.tar
+tests/testthat/travis-ssh-key
+tests/testthat/travis-ssh-key.pub
+*.httr-oauth
+*.history
+gcs_save_error
