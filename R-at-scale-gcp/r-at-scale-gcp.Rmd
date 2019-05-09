@@ -1,12 +1,10 @@
 ---
-title: "R at scale on the <br>Google Cloud Platform
-<br>
-<img src=gcp.png>"
+title: "R at scale on the Google Cloud Platform"
 author: Mark Edmondson (@HoloMarkeD)
 date: May 20th, 2019 - CopenhagenR
 output: 
   revealjs::revealjs_presentation:
-    theme: night
+    theme: white
 ---
 
 ## code.markedmondson.me
@@ -76,6 +74,10 @@ https://www.rocker-project.org/
 FROM rocker/tidyverse:3.6.0
 MAINTAINER Mark Edmondson (r@sunholo.com)
 
+# install R package dependencies
+RUN apt-get update && apt-get install -y \
+    libssl-dev 
+
 ## Install packages from CRAN
 RUN install2.r --error \ 
     -r 'http://cran.rstudio.com' \
@@ -91,30 +93,296 @@ RUN install2.r --error \
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
 ```
 
-## Docker + R = Production level R
+## Docker + R = R in Production
 
-* Flexible
-* Version controlled
-* Scalable
+* *Flexible* 
+No need to ask IT to install R places, just run `docker run`
+Cross cloud, future-proof(?)
 
+* *Version controlled*
+No worries that latest tidyverse update will break code
 
-# Scaling an R Script
+* *Scalable*
+Run multiple Docker containers at once, fits into event-driven, stateless serverless future
 
-## Vertical scaling
+## Creating Docker images with Cloud Build
 
+Continuous development with GitHub pushes
 
-## Horizontal scaling
+![build-triggers](cloud-build-k8s.png)
 
+# R Applications
 
-## Serverless scaling
+## How can we scale an R Script?
+
+* *Vertical scaling* - increase the size and power of one machine
+* *Horizontal scaling* - split up your problem into lots of little machines
+* *Serverless scaling* - send your code + data into cloud and let them sort out how many machines
+
+# Vertical scaling
+
+## Bigger boat
+
+![bigger-boat](bigger-boat.jpg)
+
+## Bigger VMs
+
+Pros
+
+    Probably run the same code with no changes needed
+    Easy to setup
+
+Cons
+
+    Expensive
+    May be better to have data in database
+
+## Launching a monster VM in the cloud
+
+3.75TB of RAM: $423 a day
+
+```r
+library(googleComputeEngineR)
+
+# this will cost a lot
+bigmem <- gce_vm("big-mem", 
+                 template = "rstudio", 
+                 predefined_type = "n1-ultramem-160")
+```
+
+![rstudio-server](rstudio-server.png)
+
+# Horizontal scaling
+
+Hi
+
+## Lots of little machines can accomplish great things
+
+![dunkirk](dunkirk.jpeg)
+
+## Parellise your code
+
+Pros
+
+    Docker infrastructure
+    library(future)
+
+Cons
+
+    Changes to your code for split-map-reduce
+    Write meta code to handle I/O data and code
+    Not applicable to some problems
+
+## Adopt a split-map-reduce mindset
+
+* Break problems down into stateless lumps
+* Reuseable bricks that can be applied to other tasks
+
+## Setup a cluster
+
+New in `googleComputeEngineR` v0.3 (7th May)
+
+```r
+library(googleComputeEngineR)
+
+vms <- gce_vm_cluster()
+#2019-03-29 23:24:54> # Creating cluster with these arguments:template = r-base,dynamic_image = rocker/r-parallel,wait = #FALSE,predefined_type = n1-standard-1
+#2019-03-29 23:25:10> Operation running...
+...
+#2019-03-29 23:25:25> r-cluster-1 VM running
+#2019-03-29 23:25:27> r-cluster-2 VM running
+#2019-03-29 23:25:29> r-cluster-3 VM running
+...
+#2019-03-29 23:25:53> # Testing cluster:
+r-cluster-1 ssh working
+r-cluster-2 ssh working
+r-cluster-3 ssh working
+```
+
+## library(future)
+
+`googleComputeEngineR` has custom backend for `future`
+
+```r
+## make a future cluster
+library(future)
+library(googleComputeEngineR)
+
+vms <- gce_vm_cluster()
+plan(cluster, workers = as.cluster(vms))
+
+...do parallel...
+```
+
+## Forecasting example
+
+```r
+# create cluster
+vms <- gce_vm_cluster("r-vm", cluster_size = 3)
+plan(cluster, workers = as.cluster(vms))
+
+# get data                          
+my_files <- list.files("myfolder")
+my_data <- lapply(my_files, read.csv)
+
+# forecast data in cluster
+library(forecast)
+cluster_f <- function(my_data, args = 4){
+   forecast(auto.arima(ts(my_data, frequency = args)))
+}
+
+result <- future_lapply(my_data, cluster_f, args = 4) 
+```
+
+## Multi-layer future loops
+
+Can multi-layer future loops (use each CPU within each VM)
+
+Thanks for Grant McDermott for figuring optimal method ([Issue #129](https://github.com/cloudyr/googleComputeEngineR/issues/129))
+
+```r
+future_sim <- 
+  ## Outer future_lapply() call loops over the no. of VMS
+  future_lapply(1:length(vms), FUN = function(x) { 
+  
+    ## Inner future_lapply() call loops over desired no. of iterations / no. of VMs
+    future_lapply(1:(iters/length(vms)), FUN = slow_func) 
+    
+  })
+```
+
+## CPU utilization
+
+3 VMs, 8 CPUs each = 24 threads
+
+![](cpus-cluster.png)
+
+# Serverless scaling
+
+## Kubernetes 
+
+Clusters of VMs + Docker + *Task controller* = Kubernetes
+
+![](jason.jpg)
+
+## Kubernetes 
+
+Pros
+
+    Auto-scaling, task queues etc.
+    Scale to billions
+    Potentially cheaper
+    May already have cluster 
+
+Cons
+
+    Needs stateless, idempotent workflows
+    Message broker?
+    Minimum 3 VMs
+
 
 # Scaling Shiny and R APIs
 
+## Dockerfiles for Shiny apps
+
+Built on Cloud Build upon GitHub push:
+
+```
+FROM rocker/shiny
+MAINTAINER Mark Edmondson (r@sunholo.com)
+
+# install R package dependencies
+RUN apt-get update && apt-get install -y \
+    libssl-dev
+    
+## Install packages from CRAN needed for your app
+RUN install2.r --error \ 
+    -r 'http://cran.rstudio.com' \
+    googleAuthR \
+    googleAnalyticsR
+
+## assume shiny app is in build folder /shiny
+COPY ./shiny/ /srv/shiny-server/myapp/
+```
+
+
+
+## Dockerfiles for plumber APIs
+
+Built on Cloud Buid every GitHub push:
+
+```
+FROM trestletech/plumber
+
+# copy your plumbed R script     
+COPY api.R /api.R
+
+# default is to run the plumbed script
+CMD ["api.R"]
+```
+
 ## Standard VM
+
+```r
+library(googleComputeEngineR)
+
+custom_image <- gce_tag_container("custom-shiny-app", 
+                                  "your-project")
+## make new Shiny template VM for your self-contained Shiny app
+vm <- gce_vm("myapp", 
+             template = "shiny",
+             predefined_type = "n1-standard-2",
+             dynamic_image = custom_image)
+```
 
 ## Kubernetes
 
-## The future?
+Shiny App:
+
+```
+kubectl run shiny1 --image gcr.io/gcer-public/shiny-googleauthrdemo:latest --port 3838
+kubectl expose deployment shiny1 --target-port=3838  --type=NodePort
+```
+
+R plumber API:
+
+```
+kubectl run my-plumber --image gcr.io/your-project/my-plumber --port 8000
+kubectl expose deployment my-plumber --target-port=8000  --type=NodePort
+```
+
+## Shiny apps waiting for service
+
+![](shiny-kubernetes.png)
+
+## Expose your workloads via Ingress
+
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: r-ingress-nginx
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /gar/
+      # app deployed to /gar/shiny/
+        backend:
+          serviceName: shiny1
+          servicePort: 3838
+```
+
+## Apps available at URL on demand
+
+```
+curl 'http://mydomain.com/api/echo?msg="its alive!"'
+#> "The message is: its alive!"
+```
+
+![shiny-app-on-k8s](shiny-app-on-k8s.png)
+
+# The future?
 
 
 
