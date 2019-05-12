@@ -118,6 +118,8 @@ Continuous development with GitHub pushes
 
 ## Bigger VMs
 
+Good for one-off workloads
+
 Pros
 
     Probably run the same code with no changes needed
@@ -173,6 +175,8 @@ vm <- gce_vm("myapp",
 ![dunkirk](dunkirk.jpeg)
 
 ## Parellise your code
+
+Good for parallelisable data tasks
 
 Pros
 
@@ -286,6 +290,8 @@ Clusters of VMs + Docker + *Task controller* = Kubernetes
 ![](jason.jpg)
 
 ## Kubernetes 
+
+Good for Shiny / R APIs
 
 Pros
 
