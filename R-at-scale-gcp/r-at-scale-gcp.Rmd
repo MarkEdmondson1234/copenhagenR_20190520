@@ -4,14 +4,18 @@ author: Mark Edmondson (@HoloMarkeD)
 date: May 20th, 2019 - CopenhagenR
 output: 
   revealjs::revealjs_presentation:
-    theme: white
+    theme: moon
+    highlight: kate
+    center: true
 ---
 
 ## code.markedmondson.me
 
 ![fgf](blogpost.png)
 
-## Qualifications
+# Credentials
+
+## My R Timeline
 
 - Digital agencies since 2007
 - useR since 2012 - Motive: how to use all this web data?
@@ -20,6 +24,8 @@ output:
 - Several Google API themed packages on CRAN via `googleAuthR`
 - Part of cloudyr group (AWS/Azure/GCP R packages for the cloud) https://cloudyr.github.io/
 - Now: Data Engineer @ IIH Nordic
+
+## GA Effect
 
 ![ga-effect](ga-effect.png)
 
@@ -35,36 +41,21 @@ output:
 
 Slack group to talk around the packages #googleAuthRverse 
 
-* `googleCloudVisionR`
-* `googleKubernetesR`
-
-# I thought I knew a bit about R and Google Cloud but then...
-
-## GoogleNext19 - Data Science at Scale with R on GCP
-
-A 40 mins talk at Google Next19 with lots of new things to try!
-
-https://www.youtube.com/watch?v=XpNVixSN-Mg&feature=youtu.be
-
-![next-intro](gcp-next-r-at-scale.png)
-
-## New concepts
-
-Great video that goes more into Spark clusters, Jupyter notebooks, training using ML Engine and scaling using Seldon on Kubernetes that I haven't tried yet
-
-![next19](gcp-r-next.png)
-
-## Some shots from the video
-
-![](next-2-gcp.png)
-
-# It (almost) always starts with Docker
-
-
+# Scale (almost) always starts with Docker containers
 
 ## Dockerfiles from The Rocker Project
 
 https://www.rocker-project.org/
+
+Maintain useful R images
+
+* `rocker/r-ver`
+* `rocker/rstudio`
+* `rocker/tidyverse`
+* `rocker/shiny`
+* `rocker/ml-gpu`
+
+## Thanks to Rocker Team
 
 ![rocker-team](rocker-team.png)
 
@@ -97,10 +88,10 @@ RUN install2.r --error \
 
 * *Flexible* 
 No need to ask IT to install R places, just run `docker run`
-Cross cloud, future-proof(?)
+Cross cloud, ascendent tech
 
 * *Version controlled*
-No worries that latest tidyverse update will break code
+No worries new package releases will break code
 
 * *Scalable*
 Run multiple Docker containers at once, fits into event-driven, stateless serverless future
@@ -111,9 +102,9 @@ Continuous development with GitHub pushes
 
 ![build-triggers](cloud-build-k8s.png)
 
-# R Applications
+# Scaling R scripts, Shiny apps and APIs
 
-## How can we scale an R Script?
+## Strategies to scale R
 
 * *Vertical scaling* - increase the size and power of one machine
 * *Horizontal scaling* - split up your problem into lots of little machines
@@ -126,6 +117,8 @@ Continuous development with GitHub pushes
 ![bigger-boat](bigger-boat.jpg)
 
 ## Bigger VMs
+
+Good for one-off workloads
 
 Pros
 
@@ -150,11 +143,32 @@ bigmem <- gce_vm("big-mem",
                  predefined_type = "n1-ultramem-160")
 ```
 
+## RStudio Server
+
 ![rstudio-server](rstudio-server.png)
 
-# Horizontal scaling
+## Standard VM serving Shiny
 
-Hi
+```r
+library(googleComputeEngineR)
+
+custom_image <- gce_tag_container("custom-shiny-app", 
+                                  "your-project")
+## make new Shiny template VM for your self-contained Shiny app
+vm <- gce_vm("myapp", 
+             template = "shiny",
+             predefined_type = "n1-standard-2",
+             dynamic_image = custom_image)
+```
+
+## Cloud computing considerations
+
+* Only charged for uptime, can configure lots of VMs so...
+* Have lots of specialised VMs (Docker images) not one big workstation
+* Keep code and data seperate e.g. `googleCloudStorageR` or `bigQueryR`
+* Consider VMs as like functions of computing power
+
+# Horizontal scaling
 
 ## Lots of little machines can accomplish great things
 
@@ -162,10 +176,13 @@ Hi
 
 ## Parellise your code
 
+Good for parallelisable data tasks
+
 Pros
 
-    Docker infrastructure
-    library(future)
+    Fault redundency
+    Forces repeatable/reproducable infrastructure
+    library(future) makes parallel processing very useable
 
 Cons
 
@@ -178,15 +195,18 @@ Cons
 * Break problems down into stateless lumps
 * Reuseable bricks that can be applied to other tasks
 
+![](lego.png)
+
 ## Setup a cluster
 
-New in `googleComputeEngineR` v0.3 (7th May)
+New in `googleComputeEngineR` v0.3 - shortcut that launches cluster, checks authentication for you
 
 ```r
 library(googleComputeEngineR)
 
 vms <- gce_vm_cluster()
-#2019-03-29 23:24:54> # Creating cluster with these arguments:template = r-base,dynamic_image = rocker/r-parallel,wait = #FALSE,predefined_type = n1-standard-1
+#2019-03-29 23:24:54> # Creating cluster with these arguments:template = r-base,dynamic_image = rocker/r-parallel,wait = 
+#FALSE,predefined_type = n1-standard-1
 #2019-03-29 23:25:10> Operation running...
 ...
 #2019-03-29 23:25:25> r-cluster-1 VM running
@@ -201,7 +221,7 @@ r-cluster-3 ssh working
 
 ## library(future)
 
-`googleComputeEngineR` has custom backend for `future`
+`googleComputeEngineR` has custom method for `future::as.cluster`
 
 ```r
 ## make a future cluster
@@ -259,6 +279,10 @@ future_sim <-
 
 # Serverless scaling
 
+## We spoke previously of
+
+Clusters of VMs + Docker = Horizontal scaling
+
 ## Kubernetes 
 
 Clusters of VMs + Docker + *Task controller* = Kubernetes
@@ -267,12 +291,14 @@ Clusters of VMs + Docker + *Task controller* = Kubernetes
 
 ## Kubernetes 
 
+Good for Shiny / R APIs
+
 Pros
 
     Auto-scaling, task queues etc.
     Scale to billions
     Potentially cheaper
-    May already have cluster 
+    May already have cluster in your organisation
 
 Cons
 
@@ -280,8 +306,6 @@ Cons
     Message broker?
     Minimum 3 VMs
 
-
-# Scaling Shiny and R APIs
 
 ## Dockerfiles for Shiny apps
 
@@ -305,7 +329,18 @@ RUN install2.r --error \
 COPY ./shiny/ /srv/shiny-server/myapp/
 ```
 
+## Kubernetes deployments - Shiny
 
+Shiny App:
+
+```
+kubectl run shiny1 \
+  --image gcr.io/gcer-public/shiny-googleauthrdemo:latest \
+  --port 3838
+
+kubectl expose deployment shiny1 \
+  --target-port=3838  --type=NodePort
+```
 
 ## Dockerfiles for plumber APIs
 
@@ -321,34 +356,17 @@ COPY api.R /api.R
 CMD ["api.R"]
 ```
 
-## Standard VM
-
-```r
-library(googleComputeEngineR)
-
-custom_image <- gce_tag_container("custom-shiny-app", 
-                                  "your-project")
-## make new Shiny template VM for your self-contained Shiny app
-vm <- gce_vm("myapp", 
-             template = "shiny",
-             predefined_type = "n1-standard-2",
-             dynamic_image = custom_image)
-```
-
-## Kubernetes
-
-Shiny App:
-
-```
-kubectl run shiny1 --image gcr.io/gcer-public/shiny-googleauthrdemo:latest --port 3838
-kubectl expose deployment shiny1 --target-port=3838  --type=NodePort
-```
+## Kubernetes deployments - Plumber
 
 R plumber API:
 
 ```
-kubectl run my-plumber --image gcr.io/your-project/my-plumber --port 8000
-kubectl expose deployment my-plumber --target-port=8000  --type=NodePort
+kubectl run my-plumber \
+  --image gcr.io/your-project/my-plumber \
+  --port 8000
+
+kubectl expose deployment my-plumber \
+  --target-port=8000  --type=NodePort
 ```
 
 ## Shiny apps waiting for service
@@ -382,7 +400,58 @@ curl 'http://mydomain.com/api/echo?msg="its alive!"'
 
 ![shiny-app-on-k8s](shiny-app-on-k8s.png)
 
-# The future?
+# I thought I knew a bit about R and Google Cloud but then...
+
+## GoogleNext19 - Data Science at Scale with R on GCP
+
+A 40 mins talk at Google Next19 with lots of new things to try!
+
+https://www.youtube.com/watch?v=XpNVixSN-Mg&feature=youtu.be
+
+![next-intro](gcp-next-r-at-scale.png)
+
+## New concepts
+
+Great video that goes more into Spark clusters, Jupyter notebooks, training using ML Engine and scaling using Seldon on Kubernetes that I haven't tried yet
+
+![next19](gcp-r-next.png)
+
+## Some shots from the video
+
+![](next-2-gcp.png)
+
+## Google Cloud Platform - Serverless Pyramid {data-transition="slide-in fade-out"}
+
+![](gcp-serverless-scale.png)
+
+## Google Cloud Platform - R applications {data-transition="fade"}
+
+![](gcp-serverless-scale-annotate.png)
+
+# Conclusions
+
+## Take-aways
+
+* Anything scales on Google Cloud Platform, including R
+* Docker docker docker
+* library(future)
+* Pick scaling stategy most suitable for you
+
+## Gratitude
+
+* Thank you for listening
+* Thanks to Kenneth for inviting me
+* Thanks to RStudio for all their cool things.  Support them by buying their stuff.
+* Thanks again to Rocker
+* Thanks to Google for Developer Expert programme and building cool stuff.
+
+## Say hello afterwards
+
+* @HoloMarkeD
+* https://code.markedmondson.me
+* Contact us at IIH Nordic to build scale for you mark@iihnordic.com
+
+
 
 
 
