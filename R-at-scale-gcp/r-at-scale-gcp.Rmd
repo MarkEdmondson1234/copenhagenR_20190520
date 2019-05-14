@@ -353,7 +353,7 @@ kubectl expose deployment my-plumber --target-port=8000  --type=NodePort
 
 ## Shiny apps waiting for service
 
-![](shiny-kubernetes.png)
+![shiny-kubernetes](shiny-kubernetes.png)
 
 ## Expose your workloads via Ingress
 
