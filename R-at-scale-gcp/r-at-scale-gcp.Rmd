@@ -1,10 +1,11 @@
 ---
-title: "R at scale on the Google Cloud Platform"
+title: "R at scale on the <br>Google Cloud Platform<br><img src=gcp-icon.png>"
 author: Mark Edmondson (@HoloMarkeD)
 date: May 20th, 2019 - CopenhagenR
 output: 
   revealjs::revealjs_presentation:
     theme: moon
+    #theme: white
     highlight: kate
     center: true
 ---
@@ -61,7 +62,7 @@ Maintain useful R images
 
 ## Dockerfiles
 
-```
+```sh
 FROM rocker/tidyverse:3.6.0
 MAINTAINER Mark Edmondson (r@sunholo.com)
 
@@ -87,8 +88,7 @@ RUN install2.r --error \
 ## Docker + R = R in Production
 
 * *Flexible* 
-No need to ask IT to install R places, just run `docker run`
-Cross cloud, ascendent tech
+No need to ask IT to install R places, use `docker run`; across cloud platforms; ascendent tech
 
 * *Version controlled*
 No worries new package releases will break code
@@ -170,7 +170,7 @@ vm <- gce_vm("myapp",
 
 * Only charged for uptime, can configure lots of VMs so...
 * Have lots of specialised VMs (Docker images) not one big workstation
-* Keep code and data seperate e.g. `googleCloudStorageR` or `bigQueryR`
+* Keep code and data separate e.g. `googleCloudStorageR` or `bigQueryR`
 * Consider VMs as like functions of computing power
 
 # Horizontal scaling
@@ -278,7 +278,7 @@ future_sim <-
 
 ## CPU utilization
 
-3 VMs, 8 CPUs each = 24 threads (~$200 a month)
+3 VMs, 8 CPUs each = 24 threads (~$3 a day)
 
 ![](cpus-cluster.png)
 
@@ -316,7 +316,7 @@ Cons
 
 Built on Cloud Build upon GitHub push
 
-```
+```sh
 FROM rocker/shiny
 MAINTAINER Mark Edmondson (r@sunholo.com)
 
@@ -336,7 +336,7 @@ COPY ./shiny/ /srv/shiny-server/myapp/
 
 ## Kubernetes deployments - Shiny
 
-```
+```sh
 kubectl run shiny1 \
   --image gcr.io/gcer-public/shiny-googleauthrdemo:prod \
   --port 3838
@@ -349,7 +349,7 @@ kubectl expose deployment shiny1 \
 
 Built on Cloud Buid every GitHub push:
 
-```
+```sh
 FROM trestletech/plumber
 
 # copy your plumbed R script     
@@ -361,7 +361,7 @@ CMD ["api.R"]
 
 ## Kubernetes deployments - Plumber API
 
-```
+```sh
 kubectl run my-plumber \
   --image gcr.io/your-project/my-plumber:prod \
   --port 8000
@@ -376,7 +376,7 @@ kubectl expose deployment my-plumber \
 
 ## Expose your workloads via Ingress
 
-```
+```yaml
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -394,7 +394,7 @@ spec:
 
 ## Apps available at URL on demand
 
-```
+```sh
 curl 'http://mydomain.com/api/echo?msg="its alive!"'
 #> "The message is: its alive!"
 ```
