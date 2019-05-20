@@ -34,9 +34,9 @@ output:
 * `searchConsoleR`
 * `googleAuthR`
 * `googleAnalyticsR` 
-* `googleComputeEngineR` (Cloudyr)  
-* `bigQueryR` (Cloudyr)
-* `googleCloudStorageR` (Cloudyr)
+* `googleComputeEngineR` (cloudyr)  
+* `bigQueryR` (cloudyr)
+* `googleCloudStorageR` (cloudyr)
 * `googleLanguageR` (rOpenSci)
 
 Slack group to talk around the packages #googleAuthRverse 
@@ -102,6 +102,10 @@ Continuous development with GitHub pushes
 
 ![build-triggers](cloud-build-k8s.png)
 
+## Images versioned in private repository
+
+![cloud-repo](cloud-repo.png)
+
 # Scaling R scripts, Shiny apps and APIs
 
 ## Strategies to scale R
@@ -132,7 +136,7 @@ Cons
 
 ## Launching a monster VM in the cloud
 
-3.75TB of RAM: $423 a day
+3.75TB of RAM: $423 a day (compare ~$1 a day for standard tier VM)
 
 ```r
 library(googleComputeEngineR)
@@ -152,6 +156,7 @@ bigmem <- gce_vm("big-mem",
 ```r
 library(googleComputeEngineR)
 
+# your customised Docker image built via Build Triggers
 custom_image <- gce_tag_container("custom-shiny-app", 
                                   "your-project")
 ## make new Shiny template VM for your self-contained Shiny app
@@ -176,7 +181,7 @@ vm <- gce_vm("myapp",
 
 ## Parellise your code
 
-Good for parallelisable data tasks
+Good for parallelisable or scheduled data tasks
 
 Pros
 
@@ -273,7 +278,7 @@ future_sim <-
 
 ## CPU utilization
 
-3 VMs, 8 CPUs each = 24 threads
+3 VMs, 8 CPUs each = 24 threads (~$200 a month)
 
 ![](cpus-cluster.png)
 
@@ -309,7 +314,7 @@ Cons
 
 ## Dockerfiles for Shiny apps
 
-Built on Cloud Build upon GitHub push:
+Built on Cloud Build upon GitHub push
 
 ```
 FROM rocker/shiny
@@ -331,11 +336,9 @@ COPY ./shiny/ /srv/shiny-server/myapp/
 
 ## Kubernetes deployments - Shiny
 
-Shiny App:
-
 ```
 kubectl run shiny1 \
-  --image gcr.io/gcer-public/shiny-googleauthrdemo:latest \
+  --image gcr.io/gcer-public/shiny-googleauthrdemo:prod \
   --port 3838
 
 kubectl expose deployment shiny1 \
@@ -356,13 +359,11 @@ COPY api.R /api.R
 CMD ["api.R"]
 ```
 
-## Kubernetes deployments - Plumber
-
-R plumber API:
+## Kubernetes deployments - Plumber API
 
 ```
 kubectl run my-plumber \
-  --image gcr.io/your-project/my-plumber \
+  --image gcr.io/your-project/my-plumber:prod \
   --port 8000
 
 kubectl expose deployment my-plumber \
