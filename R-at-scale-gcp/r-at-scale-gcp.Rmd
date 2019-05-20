@@ -4,6 +4,9 @@ author: Mark Edmondson (@HoloMarkeD)
 date: May 20th, 2019 - CopenhagenR
 output: 
   revealjs::revealjs_presentation:
+    includes:
+      in_header: gtm-header.html
+      before_body: gtm.html
     theme: moon
     #theme: white
     highlight: kate
