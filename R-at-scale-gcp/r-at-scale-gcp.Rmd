@@ -6,6 +6,9 @@ output:
   revealjs::revealjs_presentation:
     #theme: moon
     theme: white
+    includes:
+      in_header: gtm-header.html
+      before_body: gtm.html
     highlight: kate
     center: true
 ---
