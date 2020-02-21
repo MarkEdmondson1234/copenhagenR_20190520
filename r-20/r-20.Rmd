@@ -50,15 +50,18 @@ Slack group to talk around the packages #googleAuthRverse
 
 ## What is?
 
-* Docker - a container system for building and sharing applications
-* Cloud - computing delivered via the internet, not locally
-* Serverless - cloud services that often use containers to host applications without configuring servers
+> Docker: a container system for building and sharing applications
 
-## Motivation - what does serverless offer?
+> Cloud: computing delivered via the internet, not locally
 
-* Focus on code, not dev-ops
-* Scale from 0 to billions
-* Reliability and security
+
+## What does serverless offer?
+
+> Serverless - cloud services that often use containers to host applications without configuring servers
+
+- Focus on code, not dev-ops
+- Scale from 0 to billions
+- Reliability and security
 
 ## Schedule an R script in the Cloud
 
