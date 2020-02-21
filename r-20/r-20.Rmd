@@ -36,7 +36,7 @@ output:
 ## googleAuthRverse
 
 * `searchConsoleR`
-* `googleAuthR`
+* `googleAuthR` -> `gargle`
 * `googleAnalyticsR` 
 * `googleComputeEngineR` (cloudyr)  
 * `bigQueryR` (cloudyr)
@@ -46,18 +46,45 @@ output:
 
 Slack group to talk around the packages #googleAuthRverse 
 
-# Motivation
+# Evolving R with Docker and the Cloud
+
+## What is?
+
+* Docker - a container system for building and sharing applications
+* Cloud - computing delivered via the internet, not locally
+* Serverless - cloud services that often use containers to host applications without configuring servers
+
+## Motivation - what does serverless offer?
+
+* Focus on code, not dev-ops
+* Scale from 0 to billions
+* Reliability and security
 
 ## Schedule an R script in the Cloud
 
+**Demo an Rmd script pulling data from googlesheets**
 
 ## Create an R API that scales from 0 to 1 billion
 
+**Demo a plumber script with Cloud Pub/Sub**
 
 ## Build a website for your package
 
+**Demo cloudbuild.yml building website via pkgdown**
 
 ## googleCloudRunner - Use Cases
+
+```r
+install.packages("googleCloudRunner")
+library(googleCloudRunner)
+```
+
+As easy as possible enabling of R use cases in the Cloud
+
+* Scheduled R scripts
+* Long-running R scripts
+* Scale to 0 R APIs
+* Continuous development
 
 # Climbing up the pyramid
 
