@@ -11,21 +11,27 @@ output:
       before_body: gtm.html
     highlight: kate
     center: true
+    fig_width: 7
+    fig_height: 5
 ---
 
 ## code.markedmondson.me
 
-![fgf](blogpost2.png)
+<style>
+.reveal section img { background:none; border:none; box-shadow:none; }
+</style>
 
-# Credentials
+![](blogpost2.png)
+
+# Credentials {data-background=#ff0000}
 
 ## My R Timeline
 
 - Digital marketing data since 2007
-- useR since 2012 - Motive: how to use all this web data?
-- Google Developer Expert - Google Analytics & Google Cloud
+- useR since 2012 - how to use all this web data?
+- Google Developer Expert 2014 - Google Analytics & Google Cloud
 - Part of cloudyr group (AWS/Azure/GCP R packages for the cloud) https://cloudyr.github.io/
-- Now: Data Engineer @ IIH Nordic
+- Data Engineer @ IIH Nordic
 
 ## GA Effect
 
@@ -51,7 +57,7 @@ Slack: #googleAuthRverse
 * My evolving mindset for using R/Docker/Cloud (10 min)
 * Any questions? (10 min)
 
-# Abstracting R applications into the Cloud using Docker {data-background=#ff0000}
+# R in the Cloud using Docker {data-background=#ff0000}
 
 ## What is..?
 
@@ -68,11 +74,11 @@ Slack: #googleAuthRverse
 - Reliability and security
 - Abstraction
 
-## Climbing up the pyramid - R
+## Climbing up the R pyramid
 
 ![](r-pyramid.png)
 
-## Climbing up the pyramid - Cloud
+## Climbing up the Cloud pyramid
 
 ![](gcp-serverless-scale.png)
 
@@ -94,15 +100,13 @@ No worries new package releases will break code
 * *Scalable*
 Run multiple Docker containers at once, fits into event-driven, stateless serverless future
 
-## Docker levels the playing ground between languages
+## {data-background=#ff0000}
 
-> Docker levels the playing ground between languages
+> Docker levels the playing ground between languages in the cloud
 
-## Dockerfiles from The Rocker Project
+## {data-background="the-rocker-project.png"}
 
-https://www.rocker-project.org/
-
-Maintain useful R images
+## Useful R Docker images
 
 * `rocker/r-ver`
 * `rocker/rstudio`
@@ -118,7 +122,6 @@ Maintain useful R images
 
 ```sh
 FROM rocker/tidyverse:3.6.0
-MAINTAINER Mark Edmondson (r@sunholo.com)
 
 # install R package dependencies
 RUN apt-get update && apt-get install -y \
@@ -127,31 +130,23 @@ RUN apt-get update && apt-get install -y \
 ## Install packages from CRAN
 RUN install2.r --error \ 
     -r 'http://cran.rstudio.com' \
-    googleAuthR \ 
-    googleComputeEngineR \ 
     googleAnalyticsR \ 
     searchConsoleR \ 
     googleCloudStorageR \
     bigQueryR \ 
     ## install Github packages
-    && installGithub.r MarkEdmondson1234/youtubeAnalyticsR \
-    ## clean up
-    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
+    && installGithub.r MarkEdmondson1234/youtubeAnalyticsR
 ```
 
 # Demo {data-background=#ff0000}
 
 ## Schedule an R script in the Cloud
 
-**Demo an Rmd script pulling data from googlesheets**
+<iframe width="560" height="315" src="https://www.youtube.com/embed/YcHLBnLRnRs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Create an R API that scales from 0 to 1 billion
 
-**Demo a plumber script with Cloud Pub/Sub**
-
-## Build a website for your package
-
-**Demo cloudbuild.yml building website via pkgdown**
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MoKHsFr1B88" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## googleCloudRunner - Use Cases
 
@@ -162,17 +157,16 @@ library(googleCloudRunner)
 
 As easy as possible enabling of R use cases in the Cloud
 
-* Scheduled R scripts
-* Long-running R scripts
-* Scale to 0 R APIs
-* Continuous development
+* Scheduled R scripts (API calls, data updates)
+* Long-running R scripts (Batched R scripts)
+* Scale to 0 R APIs (R events, R-a-a-Service)
+* Continuous development (build R website/packages upon Git commit)
 
 # My evolving mindset for using Docker/Cloud {data-background=#ff0000}
 
 ## A use anywhere R/RStudio
 
 * Configure RStudio Server just like home...?
-* Doesn't use the cloud to full potential
 
 ```r
 library(googleComputeEngineR)
@@ -181,10 +175,14 @@ gce_vm(template = "rstudio", name = "my-rstudio-server",
        predefined_type = "n1-highmem-2")
 ```
 
-## A tailored R environment per task
+* Doesn't use the cloud to full potential
+
+## Tailored R environment
 
 * Workshops with material pre-loaded
-* ML vs googleauthrverse vs shiny vs ...
+* ML training machine
+* package sets (tidyverse, googleauthrverse etc.)
+* Shiny
 
 ```r
 library(googleComputeEngineR)
@@ -194,11 +192,10 @@ gce_vm(name = "deeplearning-r",
        acceleratorType = "nvidia-tesla-k80")
 ```
 
-## Scaling up R environments
+## Scaling up R
 
 * library(future) for cluster parallel work
 * Run many of the same R environments at a time
-* R APIs, Shiny Apps
 
 ```r
 library(future)
@@ -215,10 +212,14 @@ f <- function(my_data, args){
 result %<-% f(my_data) 
 ```
 
-## Separation of code and data (and config)
+## Code. Data. Config.
 
-* Good data science principle applicable in good cloud setups
-* The right service for the right job - BigQuery, Cloud Storage
+![](lego.png)
+
+* Good data science principles -> Good Cloud setups
+* The right tool for the job - BigQuery, Cloud Storage
+
+## Upgrades to new platforms
 
 ![](cloud-run-pick-image.png)
 
@@ -237,71 +238,40 @@ kubectl expose deployment shiny1 \
 
 https://code.markedmondson.me/r-on-kubernetes-serverless-shiny-r-apis-and-scheduled-scripts/
 
-### Shiny apps on k8s
+## Shiny apps on k8s
 
 ![shiny-kubernetes](shiny-kubernetes.png)
 
-## Batch jobs
+## Build R on a schedule
 
-Cloud Build (like the demo earlier - build Rmd on a schedule)
+Cloud Build (like the demo earlier)
 
-```r
-library(googleCloudRunner)
-cr_deploy_packagetests()
-```
+![](cloudbuild-dashboard.png)
 
-## R APIs
+## Trigger R on events
 
-Cloud Run (like the demo earlier - trigger R code from events)
+Cloud Run (like the demo earlier)
 
 ![](gadget_plumber.png)
 
-## Adapt plumber API for the model
+## My current R / Cloud setup
 
-```r
-library(googleAnalyticsR)
-
-#' Return output data from the ga_time_normalised ga_model
-#' @param viewID The viewID for Google Analytics
-#' @get /data
-function(viewID=""){
-  model <- ga_time_normalised(viewID)
-  model$output
-}
-
-#' Plot out data from the ga_time_normalised ga_model
-#' @param viewID The viewID for Google Analytics
-#' @get /plot
-#' @serializer htmlwidget
-function(viewID=""){
-  model <- ga_time_normalised(viewID)
-  model$plot
-}
-```
-
-## htmlwidgets
-
-`@serialiser htmlwidgets` is great
-
-http://gallery.htmlwidgets.org/
-
-![](htmlwidgets.png)
-
-
-## Separation of code opens up possibilities
+Same R/Docker container, many options:
 
 * Docker on VM - GPU support, ML dev work
 * Kubernetes - Shiny apps
-* Cloud Build - batch jobs
+* Cloud Build - Batched and scheduled jobs
 * Cloud Run - R APIs, event driven workflows
+
+Ability to share R code with non-R users
 
 # Summary {data-background=#ff0000}
 
 ## Take-aways
 
-* Abstracting R environments using Docker opens up horizons on what R can do
-* Abstraction offers ways to make hard things easier for common R tasks
-* Separation of R environment code, data and config makes applications very transferable to the best tool for the job
+* Abstracting R using Docker opens up R horizons
+* Cloud offers to make hard things easy for R tasks
+* Code & data & config seperation means best tool for the job
 
 ## Gratitude
 
@@ -314,8 +284,10 @@ http://gallery.htmlwidgets.org/
 
 ## Say hello
 
-* @HoloMarkeD
-* https://code.markedmondson.me
-* Contact us at IIH Nordic to build scale for you mark@iihnordic.com
+![](celebRation2020.png)
+
+* Twitter - @HoloMarkeD
+* Blog - https://code.markedmondson.me
+* Help working with R in the Cloud - mark@iihnordic.com
 * Any questions now?
 
