@@ -142,7 +142,7 @@ RUN install2.r --error \
 
 ## Schedule an R script in the Cloud
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/YcHLBnLRnRs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BainmerWVb0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Create an R API that scales from 0 to 1 billion
 
@@ -216,10 +216,11 @@ result %<-% f(my_data)
 
 ![](lego.png)
 
-* Good data science principles -> Good Cloud setups
-* The right tool for the job - BigQuery, Cloud Storage
+* Good data science principles -> Good Cloud principles
+* The right tool for the data - BigQuery, Cloud Storage etc.
+* Switch configuration via environment args, yaml etc.
 
-## Upgrades to new platforms
+## Swap to new platforms
 
 ![](cloud-run-pick-image.png)
 
@@ -271,7 +272,7 @@ Ability to share R code with non-R users
 
 * Abstracting R using Docker opens up R horizons
 * Cloud offers to make hard things easy for R tasks
-* Code & data & config seperation means best tool for the job
+* Code & data & config separation means best tool for the job
 
 ## Gratitude
 
