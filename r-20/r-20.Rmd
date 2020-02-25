@@ -21,13 +21,7 @@ output:
 
 ## My R Timeline
 
-- Digital agencies since 2007
-- useR since 2012 - Motive: how to use all this web data?
-- Shiny enthusiast e.g. https://gallery.shinyapps.io/ga-effect/
-- Google Developer Expert - Google Analytics & Google Cloud
-- Several Google API themed packages on CRAN via `googleAuthR`
-- Part of cloudyr group (AWS/Azure/GCP R packages for the cloud) https://cloudyr.github.io/
-- Now: Data Engineer @ IIH Nordic
+![](mark-timeline.png)
 
 ## GA Effect
 
