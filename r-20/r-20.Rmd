@@ -11,13 +11,19 @@ output:
       before_body: gtm.html
     highlight: kate
     center: true
+    fig_width: 7
+    fig_height: 5
 ---
 
 ## code.markedmondson.me
 
-![fgf](blogpost2.png)
+<style>
+.reveal section img { background:none; border:none; box-shadow:none; }
+</style>
 
-# Credentials
+![](blogpost2.png)
+
+# Credentials {data-background=#ff0000}
 
 ## My R Timeline
 
@@ -30,94 +36,73 @@ output:
 ## googleAuthRverse
 
 * `searchConsoleR`
-* `googleAuthR`
 * `googleAnalyticsR` 
+* `googleAuthR` -> `gargle`
 * `googleComputeEngineR` (cloudyr)  
-* `bigQueryR` (cloudyr)
 * `googleCloudStorageR` (cloudyr)
+* `bigQueryR` (cloudyr)
 * `googleLanguageR` (rOpenSci)
 * `googleCloudRunner` (New!)
 
-Slack group to talk around the packages #googleAuthRverse 
+Slack: #googleAuthRverse 
 
-# Motivation
+## Agenda today
 
-## Schedule an R script in the Cloud
+* Abstracting R applications into the Cloud using Docker (10min)
+* Demo on what that abstraction offers (10 min)
+* My evolving mindset for using R/Docker/Cloud (10 min)
+* Any questions? (10 min)
 
+# R in the Cloud using Docker {data-background=#ff0000}
 
-## Create an R API that scales from 0 to 1 billion
+## What is..?
 
+> Docker - a container system for building and sharing applications
 
-## Build a website for your package
+> Cloud - computing delivered via the internet, not locally
 
+## What does serverless offer?
 
-## googleCloudRunner - Use Cases
+> Serverless - cloud services that often use containers to host applications without configuring servers
 
-# Climbing up the pyramid
+- Focus on code, not dev-ops
+- Scale from 0 to billions
+- Reliability and security
+- Abstraction
 
-## R programming
+## Climbing up the R pyramid
 
-## Cloud execution
+![](r-pyramid.png)
 
-## The Pyramid is Abstraction
+## Climbing up the Cloud pyramid
 
-# Abstraction in R
+![](gcp-serverless-scale.png)
 
-## R features
+## The keystone
 
-## R weaknesses
+![](r-docker-cloud.png)
 
-# Abstraction in Cloud
+* R - abstraction of R environments
+* Cloud - run any code on cloud systems
 
-## From bare metal to serverless
+## Docker + R = R in Production
 
-## Docker is the key
+* *Flexible* 
+No need to ask IT to install R places, use `docker run`; across cloud platforms; ascendent tech
 
-## How Docker helps R weaknesses
+* *Version controlled*
+No worries new package releases will break code
 
-## Docker levels the playing ground between languages
+* *Scalable*
+Run multiple Docker containers at once, fits into event-driven, stateless serverless future
 
-# Rockerverse
+## {data-background=#ff0000}
 
-## R Rockerverse packages
+> Docker levels the playing ground between languages in the cloud
 
-## How Cloud thinking has evolved my R use
+## {data-background="the-rocker-project.png"}
 
-# How Cloud has evolved use of Docker
-
-## Why GCP for me
-
-## Which GCP compute service?
-
-## R on GCE VMs
-
-## R on Kubernetes
-
-## Serverless R
-
-### Cloud Run
-
-### Cloud Build
-
-# How googleCloudRunner represents this
-
-## What the demos did
-
-
-## What you can do
-
-# Summary
-
-## Take aways
-
-
-
-
-## Dockerfiles from The Rocker Project
-
-https://www.rocker-project.org/
-
-Maintain useful R images
+## Useful R Docker images
 
 * `rocker/r-ver`
 * `rocker/rstudio`
@@ -133,7 +118,6 @@ Maintain useful R images
 
 ```sh
 FROM rocker/tidyverse:3.6.0
-MAINTAINER Mark Edmondson (r@sunholo.com)
 
 # install R package dependencies
 RUN apt-get update && apt-get install -y \
@@ -142,268 +126,103 @@ RUN apt-get update && apt-get install -y \
 ## Install packages from CRAN
 RUN install2.r --error \ 
     -r 'http://cran.rstudio.com' \
-    googleAuthR \ 
-    googleComputeEngineR \ 
     googleAnalyticsR \ 
     searchConsoleR \ 
     googleCloudStorageR \
     bigQueryR \ 
     ## install Github packages
-    && installGithub.r MarkEdmondson1234/youtubeAnalyticsR \
-    ## clean up
-    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
+    && installGithub.r MarkEdmondson1234/youtubeAnalyticsR
 ```
 
-## Docker + R = R in Production
+# Demo {data-background=#ff0000}
 
-* *Flexible* 
-No need to ask IT to install R places, use `docker run`; across cloud platforms; ascendent tech
+## Schedule an R script in the Cloud
 
-* *Version controlled*
-No worries new package releases will break code
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BainmerWVb0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-* *Scalable*
-Run multiple Docker containers at once, fits into event-driven, stateless serverless future
+## Create an R API that scales from 0 to 1 billion
 
-## Creating Docker images with Cloud Build
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MoKHsFr1B88" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Continuous development with GitHub pushes
+## googleCloudRunner - Use Cases
 
-![build-triggers](cloud-build-k8s.png)
+```r
+install.packages("googleCloudRunner")
+library(googleCloudRunner)
+```
 
-## Images versioned in private repository
+As easy as possible enabling of R use cases in the Cloud
 
-![cloud-repo](cloud-repo.png)
+* Scheduled R scripts (API calls, data updates)
+* Long-running R scripts (Batched R scripts)
+* Scale to 0 R APIs (R events, R-a-a-Service)
+* Continuous development (build R website/packages upon Git commit)
 
-# Scaling R scripts, Shiny apps and APIs
+# My evolving mindset for using Docker/Cloud {data-background=#ff0000}
 
-## Strategies to scale R
+## A use anywhere R/RStudio
 
-* *Vertical scaling* - increase the size and power of one machine
-* *Horizontal scaling* - split up your problem into lots of little machines
-* *Serverless scaling* - send your code + data into cloud and let them sort out how many machines
-
-# Vertical scaling
-
-## Bigger boat
-
-![bigger-boat](bigger-boat.jpg)
-
-## Bigger VMs
-
-Good for one-off workloads
-
-Pros
-
-    Probably run the same code with no changes needed
-    Easy to setup
-
-Cons
-
-    Expensive
-    May be better to have data in database
-
-## Launching a monster VM in the cloud
-
-3.75TB of RAM: $423 a day (compare ~$1 a day for standard tier VM)
+* Configure RStudio Server just like home...?
 
 ```r
 library(googleComputeEngineR)
-
-# this will cost a lot
-bigmem <- gce_vm("big-mem", 
-                 template = "rstudio", 
-                 predefined_type = "n1-ultramem-160")
+gce_vm(template = "rstudio", name = "my-rstudio-server",
+       username = "mark", password = "r2020",
+       predefined_type = "n1-highmem-2")
 ```
 
-## RStudio Server
+* Doesn't use the cloud to full potential
 
-![rstudio-server](rstudio-server.png)
+## Tailored R environment
 
-## Standard VM serving Shiny
+* Workshops with material pre-loaded
+* ML training machine
+* package sets (tidyverse, googleauthrverse etc.)
+* Shiny
 
 ```r
 library(googleComputeEngineR)
-
-# your customised Docker image built via Build Triggers
-custom_image <- gce_tag_container("custom-shiny-app", 
-                                  "your-project")
-## make new Shiny template VM for your self-contained Shiny app
-vm <- gce_vm("myapp", 
-             template = "shiny",
-             predefined_type = "n1-standard-2",
-             dynamic_image = custom_image)
+gce_vm(name = "deeplearning-r", 
+       template = "rstudio-gpu", 
+       username = "mark", password = "mark123", 
+       acceleratorType = "nvidia-tesla-k80")
 ```
 
-## Cloud computing considerations
+## Scaling up R
 
-* Only charged for uptime, can configure lots of VMs so...
-* Have lots of specialised VMs (Docker images) not one big workstation
-* Keep code and data separate e.g. `googleCloudStorageR` or `bigQueryR`
-* Consider VMs as like functions of computing power
-
-# Horizontal scaling
-
-## Lots of little machines can accomplish great things
-
-![dunkirk](dunkirk.jpeg)
-
-## Parellise your code
-
-Good for parallelisable or scheduled data tasks
-
-Pros
-
-    Fault redundency
-    Forces repeatable/reproducable infrastructure
-    library(future) makes parallel processing very useable
-
-Cons
-
-    Changes to your code for split-map-reduce
-    Write meta code to handle I/O data and code
-    Not applicable to some problems
-
-## Adopt a split-map-reduce mindset
-
-* Break problems down into stateless lumps
-* Reuseable bricks that can be applied to other tasks
-
-![](lego.png)
-
-## Setup a cluster
-
-New in `googleComputeEngineR` v0.3 - shortcut that launches cluster, checks authentication for you
+* library(future) for cluster parallel work
+* Run many of the same R environments at a time
 
 ```r
-library(googleComputeEngineR)
-
-vms <- gce_vm_cluster()
-#2019-03-29 23:24:54> # Creating cluster with these arguments:template = r-base,dynamic_image = rocker/r-parallel,wait = 
-#FALSE,predefined_type = n1-standard-1
-#2019-03-29 23:25:10> Operation running...
-...
-#2019-03-29 23:25:25> r-cluster-1 VM running
-#2019-03-29 23:25:27> r-cluster-2 VM running
-#2019-03-29 23:25:29> r-cluster-3 VM running
-...
-#2019-03-29 23:25:53> # Testing cluster:
-r-cluster-1 ssh working
-r-cluster-2 ssh working
-r-cluster-3 ssh working
-```
-
-## library(future)
-
-`googleComputeEngineR` has custom method for `future::as.cluster`
-
-```r
-## make a future cluster
 library(future)
 library(googleComputeEngineR)
 
 vms <- gce_vm_cluster()
 plan(cluster, workers = as.cluster(vms))
 
-...do parallel...
-```
-
-## Forecasting example
-
-```r
-# create cluster
-vms <- gce_vm_cluster("r-vm", cluster_size = 3)
-plan(cluster, workers = as.cluster(vms))
-
-# get data                          
-my_files <- list.files("myfolder")
-my_data <- lapply(my_files, read.csv)
-
-# forecast data in cluster
-library(forecast)
-cluster_f <- function(my_data, args = 4){
-   forecast(auto.arima(ts(my_data, frequency = args)))
+f <- function(my_data, args){
+   ## ....expensive...computations
+   result
 }
-result <- future_lapply(my_data, cluster_f, args = 4) 
+
+result %<-% f(my_data) 
 ```
 
-## Multi-layer future loops
+## Code. Data. Config.
 
-Can multi-layer future loops (use each CPU within each VM)
+![](lego.png)
 
-Thanks for Grant McDermott for figuring optimal method ([Issue #129](https://github.com/cloudyr/googleComputeEngineR/issues/129))
+* Good data science principles -> Good Cloud principles
+* The right tool for the data - BigQuery, Cloud Storage etc.
+* Switch configuration via environment args, yaml etc.
 
-```r
-future_sim <- 
-  ## Outer future_lapply() call loops over the no. of VMS
-  future_lapply(1:length(vms), FUN = function(x) { 
-  
-    ## Inner future_lapply() call loops over desired no. of iterations / no. of VMs
-    future_lapply(1:(iters/length(vms)), FUN = slow_func) 
-    
-  })
-```
+## Swap to new platforms
 
-## CPU utilization
+![](cloud-run-pick-image.png)
 
-3 VMs, 8 CPUs each = 24 threads (~$3 a day)
+## Kubernetes
 
-![](cpus-cluster.png)
-
-# Serverless scaling
-
-## We spoke previously of
-
-Clusters of VMs + Docker = Horizontal scaling
-
-## Kubernetes 
-
-Clusters of VMs + Docker + *Task controller* = Kubernetes
-
-![](jason.jpg)
-
-## Kubernetes 
-
-Good for Shiny
-
-Pros
-
-    Auto-scaling, task queues etc.
-    Scale to billions
-    Potentially cheaper
-    May already have cluster in your organisation
-
-Cons
-
-    Needs stateless, idempotent workflows
-    Message broker?
-    Minimum 3 VMs
-    Can get complicated
-
-
-## Dockerfiles for Shiny apps
-
-Built on Cloud Build upon GitHub push
-
-```sh
-FROM rocker/shiny
-MAINTAINER Mark Edmondson (r@sunholo.com)
-
-# install R package dependencies
-RUN apt-get update && apt-get install -y \
-    libssl-dev
-    
-## Install packages from CRAN needed for your app
-RUN install2.r --error \ 
-    -r 'http://cran.rstudio.com' \
-    googleAuthR \
-    googleAnalyticsR
-
-## assume shiny app is in build folder /shiny
-COPY ./shiny/ /srv/shiny-server/myapp/
-```
-
-## Kubernetes deployments - Shiny
+Docker image originally for GCE, deployed to Kubernetes:
 
 ```sh
 kubectl run shiny1 \
@@ -414,250 +233,58 @@ kubectl expose deployment shiny1 \
   --target-port=3838  --type=NodePort
 ```
 
-## Expose your workloads via Ingress
+https://code.markedmondson.me/r-on-kubernetes-serverless-shiny-r-apis-and-scheduled-scripts/
 
-```yaml
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: r-ingress-nginx
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /gar/
-      # app deployed to /gar/shiny/
-        backend:
-          serviceName: shiny1
-          servicePort: 3838
-```
-
-## Shiny apps waiting for service
+## Shiny apps on k8s
 
 ![shiny-kubernetes](shiny-kubernetes.png)
 
-## IIH Nordic's Shiny Apps
+## Build R on a schedule
 
-![shiny-app-on-k8s](shiny-app-on-k8s.png)
+Cloud Build (like the demo earlier)
 
+![](cloudbuild-dashboard.png)
 
+## Trigger R on events
 
-# New! Cloud Run
+Cloud Run (like the demo earlier)
 
-## Cloud Run
+![](gadget_plumber.png)
 
-![](cloud-run.png)
+## My current R / Cloud setup
 
-* Built on top of Kubernetes via Knative
-* Managed Container-as-a-Service
+Same R/Docker container, many options:
 
-## Cloud Run Pros/Cons
+* Docker on VM - GPU support, ML dev work
+* Kubernetes - Shiny apps
+* Cloud Build - Batched and scheduled jobs
+* Cloud Run - R APIs, event driven workflows
 
-Good for R APIs
+Ability to share R code with non-R users
 
-Pros
-
-    Auto-scaling
-    Scale from 0
-    Simple to deploy
-    https / authentication embedded
-
-Cons
-
-    Needs stateless, idempotent workflows
-    No websockets yet (no Shiny :( )
-
-## plumber APIs 
-
-https://www.rplumber.io/
-
-Make an API out of your script:
-
-```r
-#' @get /hello
-#' @html
-function(){
-  "<html><h1>hello world</h1></html>"
-}
-```
-
-## Adapt plumber API for the model
-
-```r
-library(googleAnalyticsR)
-
-#' Return output data from the ga_time_normalised ga_model
-#' @param viewID The viewID for Google Analytics
-#' @get /data
-function(viewID=""){
-  model <- ga_time_normalised(viewID)
-  model$output
-}
-
-#' Plot out data from the ga_time_normalised ga_model
-#' @param viewID The viewID for Google Analytics
-#' @get /plot
-#' @serializer htmlwidget
-function(viewID=""){
-  model <- ga_time_normalised(viewID)
-  model$plot
-}
-
-```
-
-## htmlwidgets
-
-`@serialiser htmlwidgets` is great
-
-http://gallery.htmlwidgets.org/
-
-![](htmlwidgets.png)
-
-## Adapt plumber API for the model - test in local R session
-
-```r
-library(plumber)
-r <- plumb("api.R")
-r$run(port=8000)
-```
-
-Creates a webserver to run the R code.
-
-* In browser: http://localhost:8000/plot?viewID=81416156
-* via curl: `curl http://localhost:8000/data?viewID=81416156`
-
-## Cloud Run deployment
-
-See [`cloudRunR`](https://github.com/MarkEdmondson1234/cloudRunR)
-
-![](cloud-run-r.png)
-
-
-## Cloud Run Docker file
-
-Based on:
-
-```
-FROM trestletech/plumber
-LABEL maintainer="mark"
-
-COPY [".", "./"]
-
-ENTRYPOINT ["R", "-e", 
-            "pr <- plumber::plumb(commandArgs()[4]); 
-            pr$run(host='0.0.0.0', 
-                   port=as.numeric(Sys.getenv('PORT')))"]
-CMD ["api.R"]
-```
-
-## Cloud Run Docker file - autogenerated
-
-```r
-library(containerit)
-dd <- dockerfile("api.R")
-write(dd, "Dockerfile")
-```
-
-And add any packages needed by model.
-
-![](dockerfile-generated.png)
-
-## Cloud Run deployment - server-side auth
-
-* Server-side - JSON credentials file for GA account in api.R
-
-```r
-library(googleCloudStorageR)
-if(!is.null(googleAuthR::gar_gce_auth())){
-  gcs_get_object("ga-auth.json", bucket="your-bucket",
-                 saveToDisk = "ga-auth.json", overwrite = TRUE)
-}
-
-library(googleAnalyticsR)
-#..do calls..
-```
-
-## Cloud Run deployment - client-side auth
-
-* Client-side - use Cloud Run's authenticated calls to restrict API calls
-
-![](my-r-api-auth.png)
-
-## Continuous Development with Cloud Build
-
-Set up a build trigger for the [GitHub repo](https://github.com/MarkEdmondson1234/googleAnalyticsRWorkshop) you commit the Dockerfile to:
-
-![](api-build-trigger.png)
-
-## Cloud Build successful
-
-![](cloud-build.png)
-
-## Deploy to Cloud Run
-
-![](cloud-run-pick-image.png)
-
-## Deployed on Cloud Run
-
-Can scale to a billion, and be available for other languages.
-
-* Website plot: https://my-r-api-ewjogewawq-uc.a.run.app/plot?viewID=81416156
-* Curl: `curl https://my-r-api-ewjogewawq-uc.a.run.app/data?viewID=81416156`
-
-![](r-run-plot.png)
-
-# I thought I knew a bit about R and Google Cloud but then...
-
-## GoogleNext19 - Data Science at Scale with R on GCP
-
-A 40 mins talk at Google Next19 with lots of new things to try!
-
-https://www.youtube.com/watch?v=XpNVixSN-Mg&feature=youtu.be
-
-![next-intro](gcp-next-r-at-scale.png)
-
-## New concepts
-
-Great video that goes more into Spark clusters, Jupyter notebooks, training using ML Engine and scaling using Seldon on Kubernetes that I haven't tried yet
-
-![next19](gcp-r-next.png)
-
-## Some shots from the video
-
-![](next-2-gcp.png)
-
-## Google Cloud Platform - Serverless Pyramid {data-transition="slide-in fade-out"}
-
-![](gcp-serverless-scale.png)
-
-## Google Cloud Platform - R applications {data-transition="fade"}
-
-![](gcp-serverless-scale-annotate.png)
-
-# Conclusions
+# Summary {data-background=#ff0000}
 
 ## Take-aways
 
-* Anything scales on Google Cloud Platform, including R
-* Docker docker docker
-* library(future)
-* Pick scaling stategy most suitable for you
+* Abstracting R using Docker opens up R horizons
+* Cloud offers to make hard things easy for R tasks
+* Code & data & config separation means best tool for the job
 
 ## Gratitude
 
 * Thank you for listening
-* Thanks to Anna for inviting me
-* Thanks to RStudio for all their cool things.  Support them by buying their stuff.
+* Thanks to Anne Petersen for inviting me
+* Thanks to R Core team for Rv1.0.0 and beyond
+* Thanks to RStudio for all their cool things
 * Thanks again to Rocker
-* Thanks to Google for Developer Expert programme and building cool stuff.
+* Thanks to Google for Developer Expert programme
 
-## Say hello afterwards
+## Say hello
 
-* @HoloMarkeD
-* https://code.markedmondson.me
-* Contact us at IIH Nordic to build scale for you mark@iihnordic.com
+![](celebRation2020.png)
 
-
-
-
+* Twitter - @HoloMarkeD
+* Blog - https://code.markedmondson.me
+* Help working with R in the Cloud - mark@iihnordic.com
+* Any questions now?
 
