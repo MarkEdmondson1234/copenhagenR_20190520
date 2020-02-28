@@ -37,7 +37,7 @@ output:
 
 ![ga-effect](ga-effect.png)
 
-## googleAuthRverse
+## My CRAN packages
 
 * `searchConsoleR`
 * `googleAnalyticsR` 
@@ -48,7 +48,11 @@ output:
 * `googleLanguageR` (rOpenSci)
 * `googleCloudRunner` (New!)
 
+## googleAuthRverse 
+
 Slack: #googleAuthRverse 
+
+![](googleAuthRverse.png)
 
 ## Agenda today
 
