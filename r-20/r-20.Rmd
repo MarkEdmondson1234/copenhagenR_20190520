@@ -27,11 +27,7 @@ output:
 
 ## My R Timeline
 
-- Digital marketing data since 2007
-- useR since 2012 - how to use all this web data?
-- Google Developer Expert 2014 - Google Analytics & Google Cloud
-- Part of cloudyr group (AWS/Azure/GCP R packages for the cloud) https://cloudyr.github.io/
-- Data Engineer @ IIH Nordic
+![](mark-timeline.png)
 
 ## GA Effect
 
